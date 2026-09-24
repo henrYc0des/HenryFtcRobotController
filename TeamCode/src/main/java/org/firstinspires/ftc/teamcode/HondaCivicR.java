@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 /*
@@ -52,56 +53,75 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Camp 3 Honda Civic", group = "Robot")
+@TeleOp(name = "Honda Civic R", group = "Robot")
 
 public class HondaCivicR extends OpMode {
-    // This declares the four motors needed
-    DcMotor frontLeftDrive;
-    DcMotor frontRightDrive;
-    DcMotor backLeftDrive;
-    DcMotor backRightDrive;
-    DcMotor expMotor0;
-    DcMotor expMotor1;
-
-    CRServo expServo0;
-    CRServo expServo1;
+    // Control Motors
+    DcMotor fl;
+    DcMotor fr;
+    DcMotor bl;
+    DcMotor br;
+    // Control Servos
+    CRServo s0;
+    CRServo s1;
+    CRServo s2;
+    CRServo s3;
+    // Expansion Motors
+    DcMotor em0;
+    DcMotor em1;
+    DcMotor em2;
+    DcMotor em3;
+    // Expansion Servos
+//    CRServo es0;
+//    CRServo es1;
+//    CRServo es2;
+//    CRServo es3;
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     @Override
     public void init() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+        fl = hardwareMap.get(DcMotor.class, "fl");
+        fr = hardwareMap.get(DcMotor.class, "fr");
+        bl = hardwareMap.get(DcMotor.class, "bl");
+        br = hardwareMap.get(DcMotor.class, "br");
 
-        expMotor0 = hardwareMap.get(DcMotor.class, "expMotor0");
-        expMotor1 = hardwareMap.get(DcMotor.class, "expMotor1");
+        s0 = hardwareMap.get(CRServo.class, "s0");
+        s1 = hardwareMap.get(CRServo.class, "s1");
+        s2 = hardwareMap.get(CRServo.class, "s2");
+        s3 = hardwareMap.get(CRServo.class, "s3");
 
-        expServo0 = hardwareMap.get(CRServo.class, "expServo0");
-        expServo1 = hardwareMap.get(CRServo.class, "expServo1");
+        em0 = hardwareMap.get(DcMotor.class, "em0");
+        em1 = hardwareMap.get(DcMotor.class, "em1");
+        em2 = hardwareMap.get(DcMotor.class, "em2");
+        em3 = hardwareMap.get(DcMotor.class, "em3");
+
+//        es0 = hardwareMap.get(CRServo.class, "es0");
+//        es1 = hardwareMap.get(CRServo.class, "es1");
+//        es2 = hardwareMap.get(CRServo.class, "es2");
+//        es3 = hardwareMap.get(CRServo.class, "es3");
+
 
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        bl.setDirection(DcMotor.Direction.REVERSE);
+
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -110,10 +130,10 @@ public class HondaCivicR extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addLine("Press dpad down to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
+//        telemetry.addLine("Press dpad down to reset Yaw");
+//        telemetry.addLine("Hold left bumper to drive in robot relative");
+//        telemetry.addLine("The left joystick sets the robot direction");
+//        telemetry.addLine("Moving the right joystick left and right turns the robot");
 
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣄⡀ ⠀⠀⠀⠀⠀⠀⠀");
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⡿⠛⠉⠙⠛⠛⠛⠛⠻⢿⣿⣷⣤⡀⠀⠀⠀⠀⠀");
@@ -135,36 +155,58 @@ public class HondaCivicR extends OpMode {
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⢿⣿⣦⣄⣀⣠⣴⣿⣿⠁⠀⠈⠻⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀");
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
 
+        if (gamepad1.y) {
+            em0.setPower(1.0);
+            em1.setPower(1.0);
+            em2.setPower(1.0);
+            em3.setPower(1.0);
+        } else
+
+        //
+        if (gamepad1.dpad_up) {
+            s0.setPower(1.0);
+            s1.setPower(1.0);
+            s2.setPower(1.0);
+            s3.setPower(1.0);
+        } else
+
         if (gamepad1.dpad_down) {
             imu.resetYaw();
         }
 
-        if (gamepad1.x) {
-            expMotor0.setPower(1.0);
-        } else
+        //
+//        if (gamepad1.left_trigger_pressed) {
+//            es0.setPower(1.0);
+//        } else
+//
+//        if (gamepad1.left_bumper) {
+//            es1.setPower(1.0);
+//        } else
+//
+//        if (gamepad1.right_trigger_pressed) {
+//            es2.setPower(1.0);
+//        } else
+//
+//        if (gamepad1.right_bumper) {
+//            es3.setPower(1.0);
+//        } else
 
-        if (gamepad1.a) {
-            expMotor1.setPower(1.0);
-        } else
+        em0.setPower(0.0);
+        em1.setPower(0.0);
+        em2.setPower(0.0);
+        em3.setPower(0.0);
 
-        if (gamepad1.b) {
-            expServo0.setPower(1.0);
-        } else
+        s0.setPower(gamepad1.dpad_up ? 0.4 : 0.0);
+        s1.setPower(gamepad1.dpad_right ? 0.4 : 0.0);
+        s2.setPower(gamepad1.dpad_down ? 0.4 : 0.0);
+        s3.setPower(gamepad1.dpad_left ? 0.4 : 0.0);
 
-        if (gamepad1.y) {
-            expServo1.setPower(1.0);
-        } else
+//        es0.setPower(0.0);
+//        es1.setPower(0.0);
+//        es2.setPower(0.0);
+//        es3.setPower(0.0);
 
-        expMotor0.setPower(0.0);
-        expMotor1.setPower(0.0);
-        expServo0.setPower(0.0);
-        expServo1.setPower(0.0);
-
-        if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        }
+        driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     // This routine drives the robot field relative
@@ -208,10 +250,10 @@ public class HondaCivicR extends OpMode {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
-        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
-        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+        fl.setPower(maxSpeed * (frontLeftPower / maxPower));
+        fr.setPower(maxSpeed * (frontRightPower / maxPower));
+        bl.setPower(maxSpeed * (backLeftPower / maxPower));
+        br.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }
 

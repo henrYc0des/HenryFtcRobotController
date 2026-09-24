@@ -142,7 +142,7 @@ public class HondaCivicC extends OpMode {
         }
 
         if (gamepad1.x) {
-            expMotor0.setPower(1.0);
+            expMotor0.setPower(0.6);
         } else
 
         if (gamepad1.a) {
