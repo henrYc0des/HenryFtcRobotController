@@ -61,21 +61,13 @@ public class HondaCivicR extends OpMode {
     DcMotor fr;
     DcMotor bl;
     DcMotor br;
-    // Control Servos
-    CRServo s0;
-    CRServo s1;
-    CRServo s2;
-    CRServo s3;
-    // Expansion Motors
-    DcMotor em0;
-    DcMotor em1;
-    DcMotor em2;
-    DcMotor em3;
-    // Expansion Servos
-//    CRServo es0;
-//    CRServo es1;
-//    CRServo es2;
-//    CRServo es3;
+    DcMotor intake;
+    DcMotor indexter;
+    DcMotor shooter_left;
+    DcMotor shooter_right;
+    //
+    Servo shooter_servo;
+    double shooter_power = 1.0;
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
@@ -87,41 +79,34 @@ public class HondaCivicR extends OpMode {
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
 
-        s0 = hardwareMap.get(CRServo.class, "s0");
-        s1 = hardwareMap.get(CRServo.class, "s1");
-        s2 = hardwareMap.get(CRServo.class, "s2");
-        s3 = hardwareMap.get(CRServo.class, "s3");
+        intake = hardwareMap.get(DcMotor.class, "in");
+        indexter = hardwareMap.get(DcMotor.class, "ind");
 
-        em0 = hardwareMap.get(DcMotor.class, "em0");
-        em1 = hardwareMap.get(DcMotor.class, "em1");
-        em2 = hardwareMap.get(DcMotor.class, "em2");
-        em3 = hardwareMap.get(DcMotor.class, "em3");
+        shooter_left = hardwareMap.get(DcMotor.class, "sl");
+        shooter_right = hardwareMap.get(DcMotor.class, "sr");
 
-//        es0 = hardwareMap.get(CRServo.class, "es0");
-//        es1 = hardwareMap.get(CRServo.class, "es1");
-//        es2 = hardwareMap.get(CRServo.class, "es2");
-//        es3 = hardwareMap.get(CRServo.class, "es3");
-
-
+        shooter_servo = hardwareMap.get(Servo.class, "ss");
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        bl.setDirection(DcMotor.Direction.REVERSE);
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.REVERSE);
 
+        shooter_left.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      //  fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      //  fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+     //   bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+     //   br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -130,10 +115,10 @@ public class HondaCivicR extends OpMode {
 
     @Override
     public void loop() {
-//        telemetry.addLine("Press dpad down to reset Yaw");
-//        telemetry.addLine("Hold left bumper to drive in robot relative");
-//        telemetry.addLine("The left joystick sets the robot direction");
-//        telemetry.addLine("Moving the right joystick left and right turns the robot");
+        telemetry.addLine("shooter power: " + String.valueOf(shooter_power));
+
+        telemetry.addLine("dpad left - reset yaw");
+        telemetry.addLine("dpad right - relative drive");
 
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣄⡀ ⠀⠀⠀⠀⠀⠀⠀");
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⡿⠛⠉⠙⠛⠛⠛⠛⠻⢿⣿⣷⣤⡀⠀⠀⠀⠀⠀");
@@ -155,58 +140,35 @@ public class HondaCivicR extends OpMode {
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⢿⣿⣦⣄⣀⣠⣴⣿⣿⠁⠀⠈⠻⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀");
         telemetry.addLine("⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
 
-        if (gamepad1.y) {
-            em0.setPower(1.0);
-            em1.setPower(1.0);
-            em2.setPower(1.0);
-            em3.setPower(1.0);
-        } else
-
-        //
-        if (gamepad1.dpad_up) {
-            s0.setPower(1.0);
-            s1.setPower(1.0);
-            s2.setPower(1.0);
-            s3.setPower(1.0);
-        } else
-
-        if (gamepad1.dpad_down) {
+        if (gamepad1.dpad_left) {
             imu.resetYaw();
         }
 
-        //
-//        if (gamepad1.left_trigger_pressed) {
-//            es0.setPower(1.0);
-//        } else
-//
-//        if (gamepad1.left_bumper) {
-//            es1.setPower(1.0);
-//        } else
-//
-//        if (gamepad1.right_trigger_pressed) {
-//            es2.setPower(1.0);
-//        } else
-//
-//        if (gamepad1.right_bumper) {
-//            es3.setPower(1.0);
-//        } else
+        if (gamepad1.dpadUpWasPressed()) {
+            shooter_power += 0.05;
+        }
 
-        em0.setPower(0.0);
-        em1.setPower(0.0);
-        em2.setPower(0.0);
-        em3.setPower(0.0);
+        if (gamepad1.dpadDownWasPressed()) {
+            shooter_power -= 0.05;
+        }
 
-        s0.setPower(gamepad1.dpad_up ? 0.4 : 0.0);
-        s1.setPower(gamepad1.dpad_right ? 0.4 : 0.0);
-        s2.setPower(gamepad1.dpad_down ? 0.4 : 0.0);
-        s3.setPower(gamepad1.dpad_left ? 0.4 : 0.0);
+        // both a and b
+        intake.setPower(gamepad1.a ? 1.0 : gamepad1.b ? -1.0 : 0.0);
+        indexter.setPower(gamepad1.a ? 1.0 : 0.0);
 
-//        es0.setPower(0.0);
-//        es1.setPower(0.0);
-//        es2.setPower(0.0);
-//        es3.setPower(0.0);
+        // both x and y
+        indexter.setPower(gamepad1.x ? 1.0 : gamepad1.y ? -1.0 : 0.0);
 
-        driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        shooter_left.setPower(gamepad1.right_trigger_pressed ? shooter_power : 0.0);
+        shooter_right.setPower(gamepad1.right_trigger_pressed ? shooter_power : 0.0);
+
+        // If you press the left bumper, you get a drive from the point of view of the robot
+        // (much like driving an RC vehicle)
+        if (gamepad1.right_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
     }
 
     // This routine drives the robot field relative
